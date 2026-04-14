@@ -4,35 +4,60 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float jumpForce = 5f;
-    public Transform groundCheck;
-    public LayerMask groundLayer;
-
+    private Vector2 movelnput;
+    private float moveSpeed = 8f;
+    private float JumpForce = 9f;
     private Rigidbody2D rb;
-    private bool isGrounded;
-    private float moveInput;
-    private void Awake()
+    private Animator myAnimator;
+    void Start()
     {
-    rb = GetComponent<Rigidbody2D>();
-    }
-    private void Update()
-    { 
-    rb.linearVelocity = new Vector2(moveInput* moveSpeed, rb.linearVelocity.y);
-
-    isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        rb = GetComponent<Rigidbody2D>();
+        myAnimator = GetComponent<Animator>();
+        myAnimator.SetBool("move", false);
     }
     public void OnMove(InputValue value)
     {
-        Vector2 input = value.Get<Vector2>();
-        moveInput = input.x;
+        movelnput = value.Get<Vector2>();
     }
     public void OnJump(InputValue value)
     {
-        if (value.isPressed && isGrounded)
+        if (value.isPressed)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up* jumpForce, ForceMode2D.Impulse);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
+        }
+    }
+    void Update()
+    {
+        if (movelnput.x > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (movelnput.x < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        if (movelnput.magnitude > 0)
+        {
+            myAnimator.SetBool("move", true);
+        }
+        else
+        {
+            myAnimator.SetBool("move", false);
+        }
+        transform.Translate(Vector3.right * moveSpeed * movelnput.x * Time.deltaTime);
+    }
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.name == "Death")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            SceneManager.LoadScene("PlayScene_" + collision.name);
         }
     }
 }
