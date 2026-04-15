@@ -1,63 +1,52 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    private Vector2 movelnput;
-    private float moveSpeed = 8f;
-    private float JumpForce = 9f;
+    public float moveSpeed = 5f;
+    public float jumpForce = 5f;
+    public Transform groundCheck;
+    public LayerMask groundLayer;
+
     private Rigidbody2D rb;
-    private Animator myAnimator;
-    void Start()
+    private bool isGrounded;
+    private float moveInput;
+    private SpriteRenderer sr;
+    private Animator anim;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        myAnimator = GetComponent<Animator>();
-        myAnimator.SetBool("move", false);
+        sr = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+
+        if (moveInput < 0)
+            sr.flipX = true;
+        else if (moveInput > 0)
+            sr.flipX = false;
+
+        anim.SetFloat("Speed", Mathf.Abs(moveInput));
+
+        anim.SetBool("isJumping", !isGrounded);
+
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
     public void OnMove(InputValue value)
     {
-        movelnput = value.Get<Vector2>();
+        Vector2 input = value.Get<Vector2>();
+        moveInput = input.x;
     }
     public void OnJump(InputValue value)
     {
-        if (value.isPressed)
+        if (value.isPressed && isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
-        }
-    }
-    void Update()
-    {
-        if (movelnput.x > 0)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-        }
-        else if (movelnput.x < 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-        }
-
-        if (movelnput.magnitude > 0)
-        {
-            myAnimator.SetBool("move", true);
-        }
-        else
-        {
-            myAnimator.SetBool("move", false);
-        }
-        transform.Translate(Vector3.right * moveSpeed * movelnput.x * Time.deltaTime);
-    }
-
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.name == "Death")
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        }
-        else
-        {
-            SceneManager.LoadScene("PlayScene_" + collision.name);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
     }
 }
