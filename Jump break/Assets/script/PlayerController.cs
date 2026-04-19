@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,6 +17,8 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer sr;
     private Animator anim;
     private int jumpCount = 0;
+
+    bool isInvincible = false;
 
     private void Awake()
     {
@@ -70,5 +74,75 @@ public class PlayerController : MonoBehaviour
                 anim.SetTrigger("DoubleJump");
             }
         }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Respawn"))
+        {
+            if (!isInvincible)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+        if (collision.CompareTag("Finish"))
+        {
+            collision.GetComponent<LevelObject>().MoveToNextLevel();
+        }
+        if (collision.CompareTag("Enemy"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+            if (collision.CompareTag("Item_Invincible"))
+        {
+            Destroy(collision.gameObject);
+            StartCoroutine(InvincibilityRoutine(5f));
+            return;
+        }
+
+        if (collision.CompareTag("Item_Speed"))
+        {
+            Destroy(collision.gameObject);
+            StartCoroutine(SpeedRoutine(5f, 3f));
+            return;
+        }
+
+        if (collision.CompareTag("Item_Jump"))
+        {
+            Destroy(collision.gameObject);
+            StartCoroutine(JumpRoutine(5f, 3f));
+            return;
+        }
+    }
+    IEnumerator InvincibilityRoutine(float duration)
+    {
+        isInvincible = true;
+        Debug.Log("무적 시작!");
+
+        Color originalColor = sr.color;
+        sr.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.5f);
+
+        yield return new WaitForSeconds(duration);
+
+        sr.color = originalColor;
+        isInvincible = false;
+        Debug.Log("무적 종료!");
+    }
+    IEnumerator SpeedRoutine(float duration, float boost)
+    {
+        float original = moveSpeed;
+        moveSpeed = original + boost;
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed = original;
+    }
+    IEnumerator JumpRoutine(float duration, float boost)
+    {
+        float original = jumpForce;
+        jumpForce = original + boost;
+
+        yield return new WaitForSeconds(duration);
+
+        jumpForce = original;
     }
 }
