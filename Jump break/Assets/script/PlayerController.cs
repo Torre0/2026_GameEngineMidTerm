@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
             if (collision.CompareTag("Item_Invincible"))
         {
             Destroy(collision.gameObject);
-            StartCoroutine(InvincibilityRoutine(5f));
+            StartCoroutine(InvincibilityRoutine(3f));
             return;
         }
 
