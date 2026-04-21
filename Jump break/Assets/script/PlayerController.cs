@@ -109,7 +109,7 @@ public class PlayerController : MonoBehaviour
         if (collision.CompareTag("Item_Jump"))
         {
             Destroy(collision.gameObject);
-            StartCoroutine(JumpRoutine(5f, 3f));
+            StartCoroutine(JumpRoutine(3f, 3f));
             return;
         }
     }
