@@ -20,11 +20,14 @@ public class PlayerController : MonoBehaviour
 
     bool isInvincible = false;
 
+    float score;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        score = 0f;
     }
 
     private void Update()
@@ -86,6 +89,8 @@ public class PlayerController : MonoBehaviour
         }
         if (collision.CompareTag("Finish"))
         {
+            HighScore.TrySet(SceneManager.GetActiveScene().buildIndex, (int)score);
+
             collision.GetComponent<LevelObject>().MoveToNextLevel();
         }
         if (collision.CompareTag("Enemy"))
@@ -96,6 +101,7 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(collision.gameObject);
             StartCoroutine(InvincibilityRoutine(3f));
+            score += 10f;
             return;
         }
 
@@ -103,6 +109,7 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(collision.gameObject);
             StartCoroutine(SpeedRoutine(5f, 3f));
+            score += 10f;
             return;
         }
 
@@ -110,6 +117,7 @@ public class PlayerController : MonoBehaviour
         {
             Destroy(collision.gameObject);
             StartCoroutine(JumpRoutine(3f, 3f));
+            score += 10f;
             return;
         }
     }

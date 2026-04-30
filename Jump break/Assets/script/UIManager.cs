@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public GameObject HelpPanel;
+    public GameObject scoreBorad;
 
 
     public void GameStartButtonAction()
@@ -17,10 +18,22 @@ public class UIManager : MonoBehaviour
     {
         HelpPanel.SetActive(true);
     }
+
     public void CloseHelpPanel()
     {
         HelpPanel.SetActive(false);
     }
+
+    public void OpenScorePanel()
+	{
+		scoreBorad.SetActive(true);
+	}
+
+	public void CloseScorePanel()
+	{
+		scoreBorad.SetActive(false);
+    }
+
     public void GameExitButtonAction()
     {
 #if UNITY_EDITOR
