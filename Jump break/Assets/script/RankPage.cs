@@ -5,6 +5,8 @@ using static Unity.Burst.Intrinsics.X86.Avx;
 
 public class RankPage : MonoBehaviour
 {
+    public int level = 1;
+
     [SerializeField] Transform contentRoot;
     [SerializeField] GameObject rowPrefab;
 
@@ -22,7 +24,7 @@ public class RankPage : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-    var sortedData = allData.results.Where(r => r.stage == 1).OrderByDescending(x => x.score).ToList();
+    var sortedData = allData.results.Where(r => r.stage == level).OrderByDescending(x => x.score).ToList();
 
     for (int i = 0; i<sortedData.Count; i++)
         {

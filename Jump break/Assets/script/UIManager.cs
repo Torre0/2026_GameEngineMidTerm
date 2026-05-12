@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
+    public GameObject RankPanel;
     public GameObject HelpPanel;
     public GameObject scoreBorad;
 
@@ -32,6 +33,21 @@ public class UIManager : MonoBehaviour
 	public void CloseScorePanel()
 	{
 		scoreBorad.SetActive(false);
+    }
+
+    public void OpenRankPanel()
+    {
+        RankPanel.SetActive(true);
+    }
+
+    public void CloseRankPanel()
+    {
+        RankPanel.SetActive(false);
+    }
+
+    public void Title()
+    {
+        SceneManager.LoadScene("Title");
     }
 
     public void GameExitButtonAction()
